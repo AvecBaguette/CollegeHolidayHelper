@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scheduler</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+            integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "home.css" %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+    <div class="container">
+        <label for="year-selector">Selectare An</label>
+        <select class="form-control" id="year-selector">
+            <option>Anul I</option>
+            <option>Anul II</option>
+            <option>Anul III</option>
+            <option>Anul IV</option>
+        </select>
+    </div>
+        <table class="table table-bordered mt-2 mb-2">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col" colspan="4">Seria A</th>
+                <th scope="col"></th>
+                <th scope="col" colspan="8">Seria B</th>
+                <th scope="col"></th>
+                <th scope="col" colspan="8">Seria C</th>
+                <th scope="col"></th>
+                <th scope="col" colspan="4">Seria D</th>
+                <th scope="col"></th>
+                <th scope="col" colspan="4">Seria E</th>
+                <th scope="col"></th>
+                <th scope="col" colspan="8">Seria F</th>
+                <th scope="col"></th>
+                <th scope="col" colspan="3">Seria G</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>411A</td>
+                <td>412A</td>
+                <td>413A</td>
+                <td>414A</td>
+                <td></td>
+                <td>411Ba</td>
+                <td>411Bb</td>
+                <td>412Ba</td>
+                <td>412Bb</td>
+                <td>413Ba</td>
+                <td>413Bb</td>
+                <td>414Ba</td>
+                <td>414Bb</td>
+                <td></td>
+                <td>411Ca</td>
+                <td>411Cb</td>
+                <td>412Ca</td>
+                <td>412Cb</td>
+                <td>413Ca</td>
+                <td>413Cb</td>
+                <td>414Ca</td>
+                <td>414Cb</td>
+                <td></td>
+                <td>411D</td>
+                <td>412D</td>
+                <td>413D</td>
+                <td>414D</td>
+                <td></td>
+                <td>411E</td>
+                <td>412E</td>
+                <td>413E</td>
+                <td>414E</td>
+                <td></td>
+                <td>411Fa</td>
+                <td>411Fb</td>
+                <td>412Fa</td>
+                <td>412Fb</td>
+                <td>413Fa</td>
+                <td>413Fb</td>
+                <td>414Fa</td>
+                <td>414Fb</td>
+                <td></td>
+                <td>411G</td>
+                <td>412G</td>
+                <td>413G</td>
+            </tr>
+            {% for day in week_days %}
+                <tr>
+                    <td rowspan="14">{{ day }}</td>
+                </tr>
+                {% for i in time_interval %}
+                    <tr>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+{% else %}
+    <h1>Ceva2</h1>
+{% endif %}
+
+</body>
+</html>
