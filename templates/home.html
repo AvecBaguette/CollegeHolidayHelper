@@ -22,7 +22,7 @@
     <div class="container">
         <div class="form-group">
             <label for="year-selector">Selectare An</label>
-            <select class="form-control" id="year-selector">
+            <select class="form-control" id="year-selector" onchange="displayTable()">
                 <option>Anul I</option>
                 <option>Anul II</option>
                 <option>Anul III</option>
@@ -36,73 +36,63 @@
     </div>
 
     <div class="container" style="overflow: scroll;max-height: 90vh">
-        <table class="table table-bordered mt-2 mb-2 table-sticky" style="border-collapse: separate">
+        <table id="table_y1" class="table table-bordered mt-2 mb-2 table-sticky"
+               style="border-collapse: separate;display: contents">
             <thead>
             <tr>
                 <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col" colspan="4">Seria A</th>
-                <th scope="col"></th>
-                <th scope="col" colspan="8">Seria B</th>
-                <th scope="col"></th>
-                <th scope="col" colspan="8">Seria C</th>
-                <th scope="col"></th>
-                <th scope="col" colspan="4">Seria D</th>
-                <th scope="col"></th>
-                <th scope="col" colspan="4">Seria E</th>
-                <th scope="col"></th>
-                <th scope="col" colspan="8">Seria F</th>
-                <th scope="col"></th>
-                <th scope="col" colspan="3">Seria G</th>
+                {% for key,value in groups_y1.items %}
+                    <th scope="col"></th>
+                    <th scope="col" colspan="{{ value|length }}" style="text-align: center">Seria {{ key }}</th>
+                {% endfor %}
             </tr>
             <tr>
                 <td></td>
+                {% for key,value in groups_y1.items %}
+                    <td></td>
+                    {% for v in value %}
+                        <td>{{ v }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for day in week_days %}
+                <tr>
+                    <td rowspan="14"
+                        style="position: sticky;left: -15px;background-color: white;text-align: center;vertical-align: middle">{{ day }}</td>
+                </tr>
+                {% for i in time_interval %}
+                    <tr class="tr-fit-content">
+                        {% for key,value in groups_y1.items %}
+                            <td>{{ i }}</td>
+                            {% for v in value %}
+                                <td id="{{ day }}/{{ i }}/{{ v }}"></td>
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <table id="table_y2" class="table table-bordered mt-2 mb-2 table-sticky"
+               style="border-collapse: separate; display: none">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                {% for key,value in groups_y2.items %}
+                    <th scope="col"></th>
+                    <th scope="col" colspan="{{ value|length }}">Seria {{ key }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
                 <td></td>
-                <td>411A</td>
-                <td>412A</td>
-                <td>413A</td>
-                <td>414A</td>
-                <td></td>
-                <td>411Ba</td>
-                <td>411Bb</td>
-                <td>412Ba</td>
-                <td>412Bb</td>
-                <td>413Ba</td>
-                <td>413Bb</td>
-                <td>414Ba</td>
-                <td>414Bb</td>
-                <td></td>
-                <td>411Ca</td>
-                <td>411Cb</td>
-                <td>412Ca</td>
-                <td>412Cb</td>
-                <td>413Ca</td>
-                <td>413Cb</td>
-                <td>414Ca</td>
-                <td>414Cb</td>
-                <td></td>
-                <td>411D</td>
-                <td>412D</td>
-                <td>413D</td>
-                <td>414D</td>
-                <td></td>
-                <td>411E</td>
-                <td>412E</td>
-                <td>413E</td>
-                <td>414E</td>
-                <td></td>
-                <td>411Fa</td>
-                <td>411Fb</td>
-                <td>412Fa</td>
-                <td>412Fb</td>
-                <td>413Fa</td>
-                <td>413Fb</td>
-                <td>414Fa</td>
-                <td>414Fb</td>
-                <td></td>
-                <td>411G</td>
-                <td>412G</td>
-                <td>413G</td>
+                {% for key,value in groups_y2.items %}
+                    <td></td>
+                    {% for v in value %}
+                        <td>{{ v }}</td>
+                    {% endfor %}
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
@@ -112,52 +102,90 @@
                 </tr>
                 {% for i in time_interval %}
                     <tr class="tr-fit-content">
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:0 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:1 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:2 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:3 }}"></td>
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:4 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:5 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:6 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:7 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:8 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:9 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:10 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:11 }}"></td>
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:12 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:13 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:14 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:15 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:16 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:17 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:18 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:19 }}"></td>
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:20 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:21 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:22 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:23 }}"></td>
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:24 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:25 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:26 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:27 }}"></td>
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:28 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:29 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:30 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:31 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:32 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:33 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:34 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:35 }}"></td>
-                        <td>{{ i }}</td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:36 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:37 }}"></td>
-                        <td id="{{ day }}/{{ i }}/{{ groups_y1|get_item_by_index:38 }}"></td>
+                        {% for key,value in groups_y2.items %}
+                            <td>{{ i }}</td>
+                            {% for v in value %}
+                                <td id="{{ day }}/{{ i }}/{{ v }}"></td>
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+        </table>
+        <table id="table_y3" class="table table-bordered mt-2 mb-2 table-sticky"
+               style="border-collapse: separate; display: none">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                {% for key,value in groups_y3.items %}
+                    <th scope="col"></th>
+                    <th scope="col" colspan="{{ value|length }}">Seria {{ key }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td></td>
+                {% for key,value in groups_y3.items %}
+                    <td></td>
+                    {% for v in value %}
+                        <td>{{ v }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for day in week_days %}
+                <tr>
+                    <td rowspan="14" style="position: sticky;left: -15px;background-color: white">{{ day }}</td>
+                </tr>
+                {% for i in time_interval %}
+                    <tr class="tr-fit-content">
+                        {% for key,value in groups_y3.items %}
+                            <td>{{ i }}</td>
+                            {% for v in value %}
+                                <td id="{{ day }}/{{ i }}/{{ v }}"></td>
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+        </table>
+        <table id="table_y4" class="table table-bordered mt-2 mb-2 table-sticky"
+               style="border-collapse: separate; display: none">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                {% for key,value in groups_y4.items %}
+                    <th scope="col"></th>
+                    <th scope="col" colspan="{{ value|length }}">Seria {{ key }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td></td>
+                {% for key,value in groups_y4.items %}
+                    <td></td>
+                    {% for v in value %}
+                        <td>{{ v }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for day in week_days %}
+                <tr>
+                    <td rowspan="14" style="position: sticky;left: -15px;background-color: white">{{ day }}</td>
+                </tr>
+                {% for i in time_interval %}
+                    <tr class="tr-fit-content">
+                        {% for key,value in groups_y4.items %}
+                            <td>{{ i }}</td>
+                            {% for v in value %}
+                                <td id="{{ day }}/{{ i }}/{{ v }}"></td>
+                            {% endfor %}
+                        {% endfor %}
                     </tr>
                 {% endfor %}
             {% endfor %}
@@ -216,14 +244,19 @@
                         <div class="form-group" style="display: inline-block !important;">
                             <label>Interval Orar</label>
                         </div>
-                        <div class="form-group" id="selected-time-interval" style="display: inline-block !important;">
+                        <div class="form-group" id="selected-time-interval"
+                             style="display: inline-block !important;">
                         </div>
                     </div>
+                    <form method="post">
+                        {% csrf_token %}
                     <div class="form-group">
                         <button id="btn_save" class="btn btn-outline-info" type="button"><i
                                 class="fas fa-save mr-1"></i>Salveaza
                         </button>
                     </div>
+                        {{ form }}
+                    </form>
                     <div class="form-group">
                         <button id="btn_delete" class="btn btn-outline-info" type="button"><i
                                 class="fas fa-trash mr-1"></i>Sterge
@@ -284,33 +317,37 @@
         //SAVE (adaugare text pe baza inputului in table cells)
         $("#btn_save").click(function () {
             $("#myModal").fadeOut();
-            if ($("#activity_type option:selected").val() === "Seminar") {
-                let courseName = $("#CourseDataList").val();
-                $('#' + $.escapeSelector(selectedData[0])).html(getAbbreviation(courseName) + ' (s)'); //nume_prescurtat + (tip_activitate)
-                $('#' + $.escapeSelector(selectedData[0])).css("background", "white");
-                selectedData.splice(0, selectedData.length);
-            } else if ($("#activity_type option:selected").val() === "Laborator") {
-                let courseName = $("#CourseDataList").val();
-                $('#' + $.escapeSelector(selectedData[0])).html(getAbbreviation(courseName) + ' (l)'); //nume_prescurtat + (tip_activitate)
-                $('#' + $.escapeSelector(selectedData[0])).css("background", "white");
-                selectedData.splice(0, selectedData.length)
-            } else if ($("#activity_type option:selected").val() === "Curs") {
-                let courseName = $("#CourseDataList").val();
-                let newId = "";
-                let row = $('#' + $.escapeSelector(selectedData[0])).parent();
-                let columnIndex = 0;
-                for (let i = 0; i < selectedData.length; i++) {
-                    newId += selectedData[i] + " ";
-                    columnIndex = $('#' + $.escapeSelector(selectedData[i])).index();
-                    $('#' + $.escapeSelector(selectedData[i])).remove();
-                }
-                newId = newId.substr(0, newId.length - 1); //delete last space character
-                let colspan = selectedData.length;
-                row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan + '"></td>');
-                $('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);
-                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (c)');
-                selectedData.splice(0, selectedData.length);
+            let courseName = $("#CourseDataList").val();
+            let newId = "";
+            let row = $('#' + $.escapeSelector(selectedData[0])).parent();
+            let columnIndex = 0;
+            let colspan = selectedData.length;
+            let orderedSelectedData = selectedData;
+            orderedSelectedData = orderedSelectedData.sort().reverse();
+            for (let i = 0; i < selectedData.length; i++) {
+                newId += selectedData[i] + " ";
+                columnIndex = $('#' + $.escapeSelector(selectedData[i])).index();
+                $('#' + $.escapeSelector(orderedSelectedData[i])).remove();
             }
+            newId = newId.substr(0, newId.length - 1); //delete last space character
+
+            if (checkIf2Rows(orderedSelectedData)) {
+                row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan / 2 + ' rowspan=2 ></td>');
+                $('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);
+            } else {
+                row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan + '></td>');
+                $('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);
+            }
+
+            //show the activity in the table
+            if ($("#activity_type option:selected").val() === "Seminar") {
+                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (S)');
+            } else if ($("#activity_type option:selected").val() === "Laborator") {
+                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (L)');
+            } else if ($("#activity_type option:selected").val() === "Curs") {
+                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (C)');
+            }
+            selectedData.splice(0, selectedData.length);
 
 
             if (selectedData.length !== 0) {
@@ -331,10 +368,29 @@
 
                     let splitIds = selectedData[i].split(" ");
                     console.log(splitIds);
+                    splitIds = splitIds.sort();
+                    console.log(splitIds);
+                    splitIds = splitIds.reverse();
                     $('#' + $.escapeSelector(selectedData[i])).remove();
-                    for (let j = 0; j < splitIds.length; j++) {
-                        row.find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[j] + '"></td>');
-                        $('#' + $.escapeSelector(splitIds[j])).bind("click", tdClickEvent);
+
+                    //check for course, cells must be created on 2 rows
+                    if (checkIf2Rows(splitIds)) {
+
+                        //half on the first row
+                        for (let j = 0; j < splitIds.length / 2; j++) {
+                            row.find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[splitIds.length / 2 + j] + '"></td>');
+                            $('#' + $.escapeSelector(splitIds[j])).bind("click", tdClickEvent);
+                        }
+                        //the other half on the second row
+                        for (let j = splitIds.length / 2; j < splitIds.length; j++) {
+                            row.next().find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[j - splitIds.length / 2] + '"></td>');
+                            $('#' + $.escapeSelector(splitIds[j])).bind("click", tdClickEvent);
+                        }
+                    } else {
+                        for (let j = 0; j < splitIds.length; j++) {
+                            row.find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[j] + '"></td>');
+                            $('#' + $.escapeSelector(splitIds[j])).bind("click", tdClickEvent);
+                        }
                     }
 
                 } else {
@@ -351,7 +407,32 @@
                 $("#btn_edit").attr("disabled", true);
             }
         });
-    });
+    })
+    ;
+
+    function displayTable() {
+        if ($("#year-selector option:selected").val() === "Anul I") {
+            $("#table_y1").css("display", "contents");
+            $("#table_y2").css("display", "none");
+            $("#table_y3").css("display", "none");
+            $("#table_y4").css("display", "none");
+        } else if ($("#year-selector option:selected").val() === "Anul II") {
+            $("#table_y1").css("display", "none");
+            $("#table_y2").css("display", "contents");
+            $("#table_y3").css("display", "none");
+            $("#table_y4").css("display", "none");
+        } else if ($("#year-selector option:selected").val() === "Anul III") {
+            $("#table_y1").css("display", "none");
+            $("#table_y2").css("display", "none");
+            $("#table_y3").css("display", "contents");
+            $("#table_y4").css("display", "none");
+        } else if ($("#year-selector option:selected").val() === "Anul IV") {
+            $("#table_y1").css("display", "none");
+            $("#table_y2").css("display", "none");
+            $("#table_y3").css("display", "none");
+            $("#table_y4").css("display", "contents");
+        }
+    }
 
     function tdClickEvent() {
         if ($(this).attr("id")) {
@@ -399,11 +480,20 @@
     function unique(list) {
         let result = [];
         $.each(list, function (i, e) {
-            if ($.inArray(e, result) == -1) result.push(e);
+            if ($.inArray(e, result) === -1) result.push(e);
         });
         return result;
     }
 
+    function checkIf2Rows(ids) {
+        for (let i = 0; i < ids.length - 1; i++) {
+            if (ids[i].split("/")[1] !== ids[i + 1].split("/")[1]) {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
 
 </script>
 </body>
