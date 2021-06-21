@@ -67,7 +67,8 @@ def delete_event(request):
 def save_event(request):
     data = json.loads(request.POST["data-for-db"])
     if check_for_overlapping_hours(data) == 0:
-        return JsonResponse({"overlapping_error": "Overlapping time interval"}, status=200)
+        messages.error(request, "Overlapping time interval!")
+        return JsonResponse({"overlapping_error": True}, status=200)
 
     if "data-for-db" in request.POST:
         new_activity = Activity()
@@ -102,7 +103,7 @@ def check_for_overlapping_hours(data_to_insert):
     data_first_hour = int(data_to_insert["timeInterval"].split("-")[0])
     data_second_hour = int(data_to_insert["timeInterval"].split("-")[1])
     if data_second_hour - data_first_hour > 1:
-        if available_hours[data_first_hour] == "0" or available_hours[str(data_first_hour + 1)] == "0":
+        if available_hours[data_first_hour] == "0" or available_hours[data_first_hour + 1] == "0":
             return 0
     elif available_hours[data_first_hour] == "0":
         return 0

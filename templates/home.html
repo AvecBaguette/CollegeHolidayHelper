@@ -34,10 +34,12 @@
             </button>
         </div>
     </div>
-    <div id="overlapping_error" class="alert alert-danger" style="visibility: hidden">
-        Overlapping time interval!
-    </div>
     <div class="container" style="overflow: scroll;max-height: 90vh">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                {{ message|safe }}
+            </div>
+        {% endfor %}
         <table id="table_y1" class="table table-bordered mt-2 mb-2 table-sticky"
                style="border-collapse: separate;display: contents">
             <thead>
@@ -283,7 +285,6 @@
     let selectedData = [];
     let dataForDb = {};
     let newIdData = null;
-    let saveError = false;
 
     $(document).ready(function () {
         let dbDict = "{{ db_dict }}";
@@ -301,15 +302,15 @@
                 success: function (data) {
                     if (data["created_id"]) {
                         $('#' + $.escapeSelector(newIdData)).attr("name", data["created_id"]);
-                    } else if (data["overlapping_error"]) {
-                        $('#overlapping_error').css("visibility", "visible")
-                        saveError = true;
                     }
+                    else if (data["overlapping_error"]) {
+                        document.location.href = "{% url 'home_page' %}";
+                     }
                 },
             });
         });
 
-        $("td").click(tdClickEvent);
+        {#$("td").click(tdClickEvent);#}
         const modal = document.getElementById("myModal");
         const btnEdit = document.getElementById("btn_edit");
         const span = document.getElementsByClassName("close")[0];
@@ -353,53 +354,49 @@
 
         //SAVE (adaugare text pe baza inputului in table cells)
         $("#btn_save").click(function () {
-            if (!saveError) {
-                $("#myModal").fadeOut();
-                let courseName = $("#CourseDataList").val();
-                dataForDb["courseName"] = courseName;
-                let newId = "";
-                let row = $('#' + $.escapeSelector(selectedData[0])).parent();
-                let columnIndex = 0;
-                let colspan = selectedData.length;
-                let orderedSelectedData = selectedData;
-                orderedSelectedData = orderedSelectedData.sort().reverse();
-                for (let i = 0; i < selectedData.length; i++) {
-                    newId += selectedData[i] + " ";
-                    columnIndex = $('#' + $.escapeSelector(selectedData[i])).index();
-                    $('#' + $.escapeSelector(orderedSelectedData[i])).remove();
-                }
-                newId = newId.substr(0, newId.length - 1); //delete last space character
+            $("#myModal").fadeOut();
+            let courseName = $("#CourseDataList").val();
+            dataForDb["courseName"] = courseName;
+            let newId = "";
+            let row = $('#' + $.escapeSelector(selectedData[0])).parent();
+            let columnIndex = 0;
+            let colspan = selectedData.length;
+            let orderedSelectedData = selectedData;
+            orderedSelectedData = orderedSelectedData.sort().reverse();
+            for (let i = 0; i < selectedData.length; i++) {
+                newId += selectedData[i] + " ";
+                columnIndex = $('#' + $.escapeSelector(selectedData[i])).index();
+                $('#' + $.escapeSelector(orderedSelectedData[i])).remove();
+            }
+            newId = newId.substr(0, newId.length - 1); //delete last space character
 
-                if (checkIf2Rows(orderedSelectedData)) {
-                    row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan / 2 + ' rowspan=2 ></td>');
-                    $('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);
-                    newIdData = newId;
-                } else {
-                    row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan + '></td>');
-                    $('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);
-                    newIdData = newId;
-                }
-                dataForDb["activityType"] = $("#activity_type option:selected").val();
-                dataForDb["teacherName"] = $("#teacherDataList").val()
-                dataForDb["day"] = newId.split("/")[0];
-                //show the activity in the table
-                if ($("#activity_type option:selected").val() === "Seminar") {
-                    $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (S)');
-                } else if ($("#activity_type option:selected").val() === "Laborator") {
-                    $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (L)');
-                } else if ($("#activity_type option:selected").val() === "Curs") {
-                    $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (C)');
-                }
-                selectedData.splice(0, selectedData.length);
-
-
-                if (selectedData.length !== 0) {
-                    $("#btn_edit").attr("disabled", false);
-                } else {
-                    $("#btn_edit").attr("disabled", true);
-                }
+            if (checkIf2Rows(orderedSelectedData)) {
+                row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan / 2 + ' rowspan=2 ></td>');
+                {#$('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);#}
+                newIdData = newId;
             } else {
-                $("#myModal").fadeOut();
+                row.find("td").eq(columnIndex).before('<td class="text-center" id="' + newId + '" colspan=' + colspan + '></td>');
+                {#$('#' + $.escapeSelector(newId)).bind("click", tdClickEvent);#}
+                newIdData = newId;
+            }
+            dataForDb["activityType"] = $("#activity_type option:selected").val();
+            dataForDb["teacherName"] = $("#teacherDataList").val()
+            dataForDb["day"] = newId.split("/")[0];
+            //show the activity in the table
+            if ($("#activity_type option:selected").val() === "Seminar") {
+                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (S)');
+            } else if ($("#activity_type option:selected").val() === "Laborator") {
+                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (L)');
+            } else if ($("#activity_type option:selected").val() === "Curs") {
+                $('#' + $.escapeSelector(newId)).html(getAbbreviation(courseName) + ' (C)');
+            }
+            selectedData.splice(0, selectedData.length);
+
+
+            if (selectedData.length !== 0) {
+                $("#btn_edit").attr("disabled", false);
+            } else {
+                $("#btn_edit").attr("disabled", true);
             }
         });
 
@@ -423,17 +420,17 @@
                         //half on the first row
                         for (let j = 0; j < splitIds.length / 2; j++) {
                             row.find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[splitIds.length / 2 + j] + '"></td>');
-                            $('#' + $.escapeSelector(splitIds[splitIds.length / 2 + j])).bind("click", tdClickEvent);
+                            {#$('#' + $.escapeSelector(splitIds[splitIds.length / 2 + j])).bind("click", tdClickEvent);#}
                         }
                         //the other half on the second row
                         for (let j = splitIds.length / 2; j < splitIds.length; j++) {
                             row.next().find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[j - splitIds.length / 2] + '"></td>');
-                            $('#' + $.escapeSelector(splitIds[j - splitIds.length / 2])).bind("click", tdClickEvent);
+                            {#$('#' + $.escapeSelector(splitIds[j - splitIds.length / 2])).bind("click", tdClickEvent);#}
                         }
                     } else {
                         for (let j = 0; j < splitIds.length; j++) {
                             row.find("td").eq(columnIndex).before('<td class="text-center" id="' + splitIds[j] + '"></td>');
-                            $('#' + $.escapeSelector(splitIds[j])).bind("click", tdClickEvent);
+                            {#$('#' + $.escapeSelector(splitIds[j])).bind("click", tdClickEvent);#}
                         }
                     }
 
@@ -478,26 +475,69 @@
         }
     }
 
-    function tdClickEvent() {
-        if ($(this).attr("name")) {
-            $('#data-to-delete').val($(this).attr("name"));
-        }
+    {#function tdClickEvent() {#}
+    {#    if ($(this).attr("name")) {#}
+    {#        $('#data-to-delete').val($(this).attr("name"));#}
+    {#    }#}
+    {##}
+    {#    if ($(this).attr("id")) {#}
+    {#        if ($(this).css("background-color") === "rgb(128, 128, 128)") {#}
+    {#            $(this).css("background", "white");#}
+    {#            selectedData.splice(selectedData.indexOf($(this).attr("id")), 1);#}
+    {#        } else {#}
+    {#            $(this).css("background", "grey");#}
+    {#            selectedData.push($(this).attr("id"));#}
+    {#        }#}
+    {#    }#}
+    {#    if (selectedData.length !== 0) {#}
+    {#        $("#btn_edit").attr("disabled", false);#}
+    {#    } else {#}
+    {#        $("#btn_edit").attr("disabled", true);#}
+    {#    }#}
+    {# } #}
 
-        if ($(this).attr("id")) {
-            if ($(this).css("background-color") === "rgb(128, 128, 128)") {
-                $(this).css("background", "white");
-                selectedData.splice(selectedData.indexOf($(this).attr("id")), 1);
-            } else {
-                $(this).css("background", "grey");
-                selectedData.push($(this).attr("id"));
-            }
-        }
-        if (selectedData.length !== 0) {
-            $("#btn_edit").attr("disabled", false);
-        } else {
-            $("#btn_edit").attr("disabled", true);
-        }
-    }
+    //hover to select cells
+    $(function () {
+        var isMouseDown = false;
+        $("#table_y1 td")
+            .mousedown(function () {
+                if ($(this).attr("id")) {
+                    isMouseDown = true;
+                    $(this).toggleClass("highlighted");
+                    if ($(this).css("background-color") === "rgb(153, 153, 153)") {
+                        selectedData.push($(this).attr("id"));
+                    } else {
+                        selectedData.splice(selectedData.indexOf($(this).attr("id")), 1);
+                    }
+                }
+                return false; // prevent text selection
+            })
+            .mouseover(function () {
+                if ($(this).attr("id")) {
+                    if (isMouseDown) {
+                        $(this).toggleClass("highlighted");
+                        if ($(this).css("background-color") === "rgb(153, 153, 153)") {
+                            selectedData.push($(this).attr("id"));
+                        } else {
+                            selectedData.splice(selectedData.indexOf($(this).attr("id")), 1);
+                        }
+                    }
+                }
+            })
+            .bind("selectstart", function () {
+                return false; // prevent text selection in IE
+            });
+
+        $(document)
+            .mouseup(function () {
+                if (selectedData.length !== 0) {
+                    $("#btn_edit").attr("disabled", false);
+                } else {
+                    $("#btn_edit").attr("disabled", true);
+                }
+                isMouseDown = false;
+            });
+    });
 
     function getAbbreviation(courseName) {
         let abbreviation = "";
@@ -567,6 +607,12 @@
 
             let orderedIndividualCellsIds = individualCellsIds;
             orderedIndividualCellsIds = orderedIndividualCellsIds.sort().reverse();
+            cellIdAfterDelete = "";
+            for (let i = 0; i < orderedIndividualCellsIds.length; i++) {
+                cellIdAfterDelete = cellIdAfterDelete + orderedIndividualCellsIds[i] + " ";
+
+            }
+
             for (let i = 0; i < individualCellsIds.length; i++) {
                 columnIndex = $('#' + $.escapeSelector(individualCellsIds[i])).index();
                 $('#' + $.escapeSelector(orderedIndividualCellsIds[i])).remove();
@@ -576,7 +622,7 @@
                 //no need to bind tdClickEvent because it will be binded after this method is called
                 //$('#' + $.escapeSelector(cellIdAfterDelete)).bind("click", tdClickEvent);
             } else {
-                row.find("td").eq(columnIndex).before('<td class="text-center" name="' + key + '"' + 'id="' + cellIdAfterDelete + '" colspan=' + colspan + '></td>');
+                row.find("td").eq(columnIndex).before('<td class="text-center" name="' + key + '"' + ' id="' + cellIdAfterDelete + '" colspan=' + colspan + '></td>');
                 //$('#' + $.escapeSelector(cellIdAfterDelete)).bind("click", tdClickEvent);
             }
 

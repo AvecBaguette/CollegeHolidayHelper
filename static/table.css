@@ -6,15 +6,20 @@
     white-space: nowrap;
 }
 
-.table-sticky thead tr:nth-child(1) th{
+.table-sticky thead tr:nth-child(1) th {
     position: sticky;
     top: 0;
     background: white;
     border: 1px solid #ddd;
 }
-.table-sticky thead tr:nth-child(2)  td{
+
+.table-sticky thead tr:nth-child(2) td {
     position: sticky;
     top: 50px;
     background: white;
     border: 1px solid #ddd;
+}
+
+table td.highlighted {
+    background-color: #999;
 }
