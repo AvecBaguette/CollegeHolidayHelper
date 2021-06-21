@@ -3,9 +3,12 @@ from user.models import Activity
 from user.utils.db_utils import from_db_to_dict
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .forms import UserRegisterForm
 import json
 
 
+@login_required(login_url="user-login")
 def home_view(request):
     selected_year = "anul-1"
     if "timetableYear" in request.GET:
@@ -59,6 +62,23 @@ def home_view(request):
 
     }
     return render(request, "home.html", context)
+
+
+def registration_view(request):
+    if request.user.is_authenticated:
+        return redirect('home_page')
+
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # form.cleaned_data.get('username')
+            messages.success(request, 'Contul a fost creat cu succes. Vă puteţi loga.')
+            return redirect('user-login')
+    else:
+        form = UserRegisterForm()
+
+    return render(request, 'user/register.html', {'form': form})
 
 
 def delete_event(request):
