@@ -1,8 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from user.models import Activity
+from user.utils.db_utils import from_db_to_dict
+from django.http import JsonResponse
+from django.contrib import messages
+import json
 
 
 def home_view(request):
-    table_data = {
+    existing_activities = Activity.objects.all()
+    db_dict = {}
+    for activity in existing_activities:
+        db_dict = from_db_to_dict(activity, db_dict)
+    context = {
+        'db_dict': json.dumps(db_dict),
         'time_interval': ['08-09', '09-10', '10-11', '11-12', '12-13', '13-14', '14-15', '15-16', '16-17', '17-18',
                           '18-19', '19-20', '20-21'],
         'week_days': ['Luni', 'Marti', 'Miercuri', 'Joi', 'Vineri'],
@@ -25,7 +35,7 @@ def home_view(request):
             'G': ['421Ga', '421Gb', '422Ga', '422Gb']
         },
         'groups_y3': {
-            'A': ['431Aa', '431Ab', '432Aa', '432Ab', '433Aa', '433Ab', '434Aa', '434Aa', '435Aa', '435Ab'],
+            'A': ['431Aa', '431Ab', '432Aa', '432Ab', '433Aa', '433Ab', '434Aa', '434Ab', '435Aa', '435Ab'],
             'B': ['431Ba', '431Bb', '432Ba', '432Bb', '433Ba', '433Bb', '434Ba', '434Bb', '435Ba', '435Bb'],
             'C': ['431Ca', '431Cb', '432Ca', '432Cb', '433Ca', '433Cb', '434Ca', '434Cb', '435Ca', '435Cb'],
             'D': ['431Da', '431Db', '432Da', '432Db', '433Da', '433Db', '434Da', '434Db'],
@@ -44,7 +54,56 @@ def home_view(request):
         }
 
     }
+    return render(request, "home.html", context)
 
-    if request.POST:
-        print("am fecut post")
-    return render(request, "home.html", table_data)
+
+def delete_event(request):
+    if "data-to-delete" in request.POST:
+        activity_to_delete = Activity.objects.filter(id=int(request.POST["data-to-delete"])).first()
+        activity_to_delete.delete()
+    return redirect("home_page")
+
+
+def save_event(request):
+    data = json.loads(request.POST["data-for-db"])
+    if check_for_overlapping_hours(data) == 0:
+        return JsonResponse({"overlapping_error": "Overlapping time interval"}, status=200)
+
+    if "data-for-db" in request.POST:
+        new_activity = Activity()
+        new_activity.groups = str(data['groups'])
+        new_activity.time_interval = data['timeInterval']
+        new_activity.course_name = data['courseName']
+        new_activity.activity_type = data['activityType']
+
+        new_activity.teacher_name = data['teacherName']
+        new_activity.day = data['day']
+        new_activity.save()
+        return JsonResponse({"created_id": new_activity.id}, status=200)
+    return redirect("home_page")
+
+
+def check_for_overlapping_hours(data_to_insert):
+    all_activities = Activity.objects.all()
+    available_hours = {8: '1', 9: '1', 10: '1', 11: '1', 12: '1', 13: '1', 14: '1', 15: '1', 16: '1',
+                       17: '1', 18: '1', 19: '1', 20: '1'}
+
+    for activity in all_activities:
+        if activity.teacher_name == data_to_insert["teacherName"]:
+            time_interval = activity.time_interval
+            first_hour = int(time_interval.split("-")[0])
+            second_hour = int(time_interval.split("-")[1])
+            if second_hour - first_hour > 1:
+                available_hours[first_hour] = "0"
+                available_hours[first_hour + 1] = "0"
+            else:
+                available_hours[first_hour] = "0"
+
+    data_first_hour = int(data_to_insert["timeInterval"].split("-")[0])
+    data_second_hour = int(data_to_insert["timeInterval"].split("-")[1])
+    if data_second_hour - data_first_hour > 1:
+        if available_hours[data_first_hour] == "0" or available_hours[str(data_first_hour + 1)] == "0":
+            return 0
+    elif available_hours[data_first_hour] == "0":
+        return 0
+    return 1
