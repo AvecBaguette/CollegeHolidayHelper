@@ -7,6 +7,9 @@ import json
 
 
 def home_view(request):
+    selected_year = "anul-1"
+    if "timetableYear" in request.GET:
+        selected_year = request.GET["timetableYear"]
     existing_activities = Activity.objects.all()
     db_dict = {}
     for activity in existing_activities:
@@ -26,7 +29,7 @@ def home_view(request):
             'G': ['411G', '412G', '413G']
         },
         'groups_y2': {
-            'A': ['421Aa', '421Ab', '422Aa', '422Ab', '423Aa', '413Ab', '424Aa', '424Aa'],
+            'A': ['421Aa', '421Ab', '422Aa', '422Ab', '423Aa', '413Ab', '424Aa', '424Ab'],
             'B': ['421Ba', '421Bb', '422Ba', '422Bb', '423Ba', '423Bb', '424Ba', '424Bb'],
             'C': ['421Ca', '421Cb', '422Ca', '422Cb', '423Ca', '423Cb', '424Ca', '424Cb'],
             'D': ['421Da', '421Db', '422Da', '422Db', '423Da', '423Db', '424Da', '424Db', '425Da', '425Db'],
@@ -51,7 +54,8 @@ def home_view(request):
             'E': ['431Ea', '431Eb', '432Ea', '432Eb', '433Ea', '433Eb', '434Ea', '434Eb', '435Ea', '435Eb'],
             'F': ['431Fa', '431Fb'],
             'G': ['431Ga', '431Gb', '432Ga']
-        }
+        },
+        'selected_year': selected_year
 
     }
     return render(request, "home.html", context)
@@ -61,7 +65,7 @@ def delete_event(request):
     if "data-to-delete" in request.POST:
         activity_to_delete = Activity.objects.filter(id=int(request.POST["data-to-delete"])).first()
         activity_to_delete.delete()
-    return redirect("home_page")
+    return JsonResponse({}, status=200)
 
 
 def save_event(request):
@@ -85,7 +89,7 @@ def save_event(request):
 
 
 def check_for_overlapping_hours(data_to_insert):
-    all_activities = Activity.objects.all()
+    all_activities = Activity.objects.filter(day=data_to_insert["day"])
     available_hours = {8: '1', 9: '1', 10: '1', 11: '1', 12: '1', 13: '1', 14: '1', 15: '1', 16: '1',
                        17: '1', 18: '1', 19: '1', 20: '1'}
 

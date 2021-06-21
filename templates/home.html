@@ -23,10 +23,10 @@
         <div class="form-group">
             <label for="year-selector">Selectare An</label>
             <select class="form-control" id="year-selector" onchange="displayTable()">
-                <option>Anul I</option>
-                <option>Anul II</option>
-                <option>Anul III</option>
-                <option>Anul IV</option>
+                <option value="anul-1">Anul I</option>
+                <option value="anul-2">Anul II</option>
+                <option value="anul-3">Anul III</option>
+                <option value="anul-4">Anul IV</option>
             </select>
         </div>
         <div class="form-group">
@@ -38,7 +38,9 @@
         {% for message in messages %}
             <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
                 {{ message|safe }}
+                <span class="float-right btn-outline-danger" id='close-error'>x</span>
             </div>
+
         {% endfor %}
         <table id="table_y1" class="table table-bordered mt-2 mb-2 table-sticky"
                style="border-collapse: separate;display: contents">
@@ -287,9 +289,25 @@
     let newIdData = null;
 
     $(document).ready(function () {
+        $("#year-selector").val("{{ selected_year }}")
+        $("#year-selector").trigger("onchange")
         let dbDict = "{{ db_dict }}";
         dbDict = JSON.parse(dbDict.replace(/&quot;/g, '"'));
         showExistingData(dbDict);
+
+
+        $("#delete-form").submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: {% url 'timetable-delete' %},
+                data: $(this).serialize(),
+                method: 'post',
+                dataType: 'JSON',
+                success: function (data) {
+                        document.location.href = "{% url 'home_page' %}?timetableYear="+$("#year-selector").val();
+                },
+            });
+        });
 
         $("#save-form").submit(function (e) {
             e.preventDefault();
@@ -302,10 +320,10 @@
                 success: function (data) {
                     if (data["created_id"]) {
                         $('#' + $.escapeSelector(newIdData)).attr("name", data["created_id"]);
+                        document.location.href = "{% url 'home_page' %}?timetableYear="+$("#year-selector").val();
+                    } else if (data["overlapping_error"]) {
+                        document.location.href = "{% url 'home_page' %}?timetableYear="+$("#year-selector").val();
                     }
-                    else if (data["overlapping_error"]) {
-                        document.location.href = "{% url 'home_page' %}";
-                     }
                 },
             });
         });
@@ -345,6 +363,13 @@
             modal.style.display = "none";
             cleanUp();
         }
+
+        $("#close-error").click(function () {
+            this.parentNode.parentNode
+                .removeChild(this.parentNode);
+            return false;
+        });
+
         window.onclick = function (event) {
             if (event.target === modal) {
                 modal.style.display = "none";
@@ -452,22 +477,22 @@
     ;
 
     function displayTable() {
-        if ($("#year-selector option:selected").val() === "Anul I") {
+        if ($("#year-selector option:selected").val() === "anul-1") {
             $("#table_y1").css("display", "contents");
             $("#table_y2").css("display", "none");
             $("#table_y3").css("display", "none");
             $("#table_y4").css("display", "none");
-        } else if ($("#year-selector option:selected").val() === "Anul II") {
+        } else if ($("#year-selector option:selected").val() === "anul-2") {
             $("#table_y1").css("display", "none");
             $("#table_y2").css("display", "contents");
             $("#table_y3").css("display", "none");
             $("#table_y4").css("display", "none");
-        } else if ($("#year-selector option:selected").val() === "Anul III") {
+        } else if ($("#year-selector option:selected").val() === "anul-3") {
             $("#table_y1").css("display", "none");
             $("#table_y2").css("display", "none");
             $("#table_y3").css("display", "contents");
             $("#table_y4").css("display", "none");
-        } else if ($("#year-selector option:selected").val() === "Anul IV") {
+        } else if ($("#year-selector option:selected").val() === "anul-4") {
             $("#table_y1").css("display", "none");
             $("#table_y2").css("display", "none");
             $("#table_y3").css("display", "none");
@@ -499,8 +524,11 @@
     //hover to select cells
     $(function () {
         var isMouseDown = false;
-        $("#table_y1 td")
+        $("#table_y1 td, #table_y2 td, #table_y3 td, #table_y4 td")
             .mousedown(function () {
+                if ($(this).attr("name")) {
+                    $('#data-to-delete').val($(this).attr("name"));
+                }
                 if ($(this).attr("id")) {
                     isMouseDown = true;
                     $(this).toggleClass("highlighted");
@@ -516,6 +544,9 @@
                 if ($(this).attr("id")) {
                     if (isMouseDown) {
                         $(this).toggleClass("highlighted");
+                        if ($(this).attr("name")) {
+                            $('#data-to-delete').val($(this).attr("name"));
+                        }
                         if ($(this).css("background-color") === "rgb(153, 153, 153)") {
                             selectedData.push($(this).attr("id"));
                         } else {
