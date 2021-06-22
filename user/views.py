@@ -72,7 +72,6 @@ def registration_view(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            # form.cleaned_data.get('username')
             messages.success(request, 'Contul a fost creat cu succes. Vă puteţi loga.')
             return redirect('user-login')
     else:
